@@ -1,0 +1,120 @@
+# Bot Discord + RAG Configuration Template
+# Copie este arquivo para config.yaml e ajuste conforme necessário
+
+# =============================================================================
+# LLM Configuration
+# =============================================================================
+llm:
+  primary_model: "x-ai/grok-beta"
+  fallback_model: "x-ai/grok-4.1-fast:free"
+  temperature: 0.7
+  max_tokens: 1000
+
+  system_prompt: |
+    Você é um assistente jurídico especializado em Direito Administrativo brasileiro.
+    Sua função é responder perguntas com base nas informações de contexto fornecidas.
+
+    Diretrizes:
+    - Use as informações do contexto para responder à pergunta do usuário
+    - Se a resposta não estiver no contexto, diga que não sabe, mas tente ser útil
+    - Responda sempre em Português brasileiro
+    - Seja claro, preciso e objetivo
+    - Cite as fontes quando relevante (ex: "De acordo com a Lei X...")
+
+# =============================================================================
+# RAG Configuration
+# =============================================================================
+rag:
+  default_match_count: 5
+  default_match_threshold: 0.75
+  max_context_chunks: 10
+  chunk_max_words: 500
+  chunk_strategy: "sentence"
+
+# =============================================================================
+# Discord Bot Behavior
+# =============================================================================
+discord:
+  command_prefix: "!"
+  # Timeout aumentado para operações RAG complexas (busca vetorial + LLM)
+  operation_timeout: 60  # Aumentado de 30s para 60s
+  max_response_length: 2000
+
+  no_context_message: |
+    Desculpe, não encontrei informações relevantes na base de conhecimento para responder sua pergunta.
+    Tente reformular a pergunta ou seja mais específico.
+
+  sources_preview:
+    slash_command: 3
+    mention: 2
+
+  emojis:
+    robot: "🤖"
+    sources: "📚"
+    error: "❌"
+    success: "✅"
+    thinking: "🔍"
+
+# =============================================================================
+# Database Configuration
+# =============================================================================
+database:
+  pool_size: 10
+  max_overflow: 20
+  query_timeout: 10
+
+  vector_index:
+    type: "ivfflat"
+    lists: 200
+    probes: 10
+
+# =============================================================================
+# Performance & Monitoring
+# =============================================================================
+performance:
+  enable_cache: true
+  cache_ttl_seconds: 3600
+  log_slow_queries: true
+  slow_query_threshold_ms: 1000
+
+  rate_limit:
+    # IMPORTANTE: Valide estes valores contra os limites da sua API
+    # - OpenAI free tier: ~60 RPM para embeddings
+    # - OpenRouter: varia por modelo (Grok free tier: ~30-60 RPM)
+    # Fórmula: desired_rpm = per_user_qps * concurrent_users * 60
+    # Exemplo: 5 queries/min/usuário * 10 usuários = 50 RPM mínimo
+    embeddings_per_minute: 60
+    llm_requests_per_minute: 60  # Aumentado de 30 para 60 RPM (suporta ~10 usuários)
+
+# =============================================================================
+# File Processing
+# =============================================================================
+files:
+  uploads_dir: "data/uploads"
+  allowed_extensions:
+    - ".txt"
+    - ".md"
+    - ".pdf"      # PDFs são comuns em documentos jurídicos
+    # - ".docx"   # Opcional: descomentar se implementar loader para DOCX
+  max_file_size_mb: 10
+  cleanup_after_processing: true
+
+# =============================================================================
+# Logging Configuration
+# =============================================================================
+logging:
+  level: "INFO"
+  format: "[%(asctime)s] %(levelname)s - %(name)s - %(message)s"
+  save_to_file: true
+  log_file: "logs/bot.log"
+  max_log_size_mb: 50
+  backup_count: 5
+
+# =============================================================================
+# Feature Flags
+# =============================================================================
+features:
+  enable_hybrid_search: false
+  enable_thread_responses: false
+  enable_analytics: true
+  development_mode: false
