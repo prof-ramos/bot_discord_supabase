@@ -14,14 +14,19 @@ class EmbeddingsProvider:
         return resp.data[0].embedding
 
     async def embed_many(self, texts: list[str]) -> list[list[float]]:
-        """Embeds em lote (limita concorrência para free tier)."""
+        """
+        Embeds em lote (limita concorrência para free tier).
+
+        IMPORTANTE: Usa asyncio.gather para preservar a ordem dos embeddings.
+        A ordem deve corresponder à ordem dos textos de entrada.
+        """
         semaphore = asyncio.Semaphore(5)
-        results: list[list[float]] = []
 
         async def _embed_single(t: str):
             async with semaphore:
                 return await self.embed_text(t)
 
         coros = [_embed_single(t) for t in texts]
-        results.extend(await asyncio.gather(*coros))
-        return results
+        # asyncio.gather preserva a ordem, asyncio.as_completed não!
+        results = await asyncio.gather(*coros)
+        return list(results)

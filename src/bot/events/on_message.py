@@ -50,7 +50,8 @@ async def setup(bot: commands.Bot, pipeline: RagPipeline):
                     await message.reply(final_msg)
 
                 except Exception as e:
-                    await message.reply(f"Ocorreu um erro ao processar sua mensagem: {e}")
+                    # Não expõe detalhes do erro ao usuário (pode conter API keys)
+                    await message.reply("❌ Erro ao processar mensagem. Tente novamente.")
 
         # Processa comandos normais (se houver prefix commands)
         await bot.process_commands(message)
