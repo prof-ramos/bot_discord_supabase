@@ -1,5 +1,6 @@
 # Envs & secrets
 .env
+config.yaml
 
 # Python
 __pycache__/
@@ -20,6 +21,10 @@ node_modules/
 
 # Data/uploads
 data/uploads/
+
+# Logs
+logs/
+*.log
 
 # Supabase local artifacts
 supabase/.temp/
