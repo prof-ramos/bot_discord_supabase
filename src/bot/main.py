@@ -6,6 +6,7 @@ from .config import load_settings
 from .rag.embeddings import EmbeddingsProvider
 from .rag.supabase_store import SupabaseStore
 from .rag.pipeline import RagPipeline
+from .rag.llm import LLMClient
 
 
 async def load_extensions(bot: commands.Bot, settings, pipeline):
@@ -14,7 +15,7 @@ async def load_extensions(bot: commands.Bot, settings, pipeline):
     await cogs.rag_user.setup(bot, settings, pipeline)
     await cogs.rag_admin.setup(bot, settings, pipeline)
     await events.on_ready.setup(bot)
-    await events.on_message.setup(bot)
+    await events.on_message.setup(bot, pipeline)
 
 
 def build_bot():
@@ -27,7 +28,8 @@ def build_bot():
 
     store = SupabaseStore(settings.supabase_url, settings.supabase_service_key)
     embedder = EmbeddingsProvider(api_key=settings.openai_api_key)
-    pipeline = RagPipeline(store=store, embedder=embedder)
+    llm = LLMClient(api_key=settings.openrouter_api_key)
+    pipeline = RagPipeline(store=store, embedder=embedder, llm=llm)
 
     return bot, settings, pipeline
 
