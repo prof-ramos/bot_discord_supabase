@@ -6,7 +6,7 @@ Bot Discord com Supabase (pgvector) como store do RAG. Discord é só a porta de
 - Python 3.12+
 - `uv` instalado
 - Supabase com pgvector
-- `.env` com: `DISCORD_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`
+- `.env` com: `DISCORD_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `OPENROUTER_API_KEY` (LLM via OpenRouter), `UPLOADS_DIR` (opcional, padrão `data/uploads`), `RAG_MATCH_THRESHOLD` (opcional, padrão `0.75`), `RAG_MATCH_COUNT` (opcional, padrão `5`)
 
 ## Setup
 ```bash
@@ -20,6 +20,11 @@ supabase db push --db-url "<DIRECT_URL>" --include-all --yes
 # rodar bot
 ./run.sh bot
 ```
+
+## Configuração
+- O LLM é acessado via OpenRouter; defina `OPENROUTER_API_KEY` para habilitar chamadas.
+- `UPLOADS_DIR` controla onde os uploads temporários são salvos (padrão `data/uploads`).
+- `RAG_MATCH_THRESHOLD` e `RAG_MATCH_COUNT` ajustam o comportamento da busca vetorial.
 
 ## Comandos (slash)
 - `/add_doc` — upload -> chunks -> embeddings -> Supabase
