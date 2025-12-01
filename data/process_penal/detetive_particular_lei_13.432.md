@@ -1,0 +1,122 @@
+**(Atualização em 16/06/2025: questões de concurso)**
+
+[**LEI Nº 13.432, DE 11 DE ABRIL DE 2017.**](http:/legislacao.planalto.gov.br/legisla/legislacao.nsf/Viw_Identificacao/lei%2013.432-2017?OpenDocument)
+
+|    | Dispõe sobre o exercício da profissão de detetive particular.   |
+|----|-----------------------------------------------------------------|
+
+**O PRESIDENTE DA REPÚBLICA** Faço saber que o Congresso Nacional decreta e eu sanciono a seguinte Lei:
+
+Art. 1 o (VETADO).
+
+**Art. 2** ~~**º**~~ **Para os fins desta Lei, considera-se detetive particular o profissional que, habitualmente, por conta própria ou na forma de sociedade civil ou empresarial, planeje e execute coleta de dados e informações de natureza não criminal, com conhecimento técnico e utilizando recursos e meios tecnológicos permitidos, visando ao esclarecimento de assuntos de interesse privado do contratante.** **(DPERJ-2023)**
+
+§ 1 ~~º~~ Consideram-se sinônimas, para efeito desta Lei, as expressões “detetive particular”, “detetive profissional” e outras que tenham ou venham a ter o mesmo objeto.
+
+§ 2 ~~º~~ (VETADO).
+
+Art. 3 ~~º~~ (VETADO).
+
+Art. 4 ~~º~~ (VETADO).
+
+**Art. 5** ~~**º**~~ **O detetive particular pode colaborar com investigação policial em curso, desde que expressamente autorizado pelo contratante.** **(PCRO-2022) (PCRR-2022)**
+
+**Parágrafo único. O aceite da colaboração ficará a critério do delegado de polícia, que poderá admiti-la ou rejeitá-la a qualquer tempo.** **(PCRO-2022) (PCRR-2022)**
+
+**(PCRO-2022-CESPE)** : Considerando que tenha sido instaurado inquérito policial que ainda se encontra em curso, assinale a opção correta acerca das funções do delegado: Cabe ao delegado aceitar ou rejeitar a colaboração de detetive particular. **BL: art. 5º, Lei 13432/17.**
+
+Art. 6 ~~º~~ Em razão da natureza reservada de suas atividades, o detetive particular, no desempenho da profissão, deve agir com técnica, legalidade, honestidade, discrição, zelo e apreço pela verdade.
+
+Art. 7 ~~º~~ O detetive particular é obrigado a registrar em instrumento escrito a prestação de seus serviços.
+
+Art. 8 ~~º~~ O contrato de prestação de serviços do detetive particular conterá:
+
+I - qualificação completa das partes contratantes;
+
+II - prazo de vigência;
+
+III - natureza do serviço;
+
+IV - relação de documentos e dados fornecidos pelo contratante;
+
+V - local em que será prestado o serviço;
+
+VI - estipulação dos honorários e sua forma de pagamento.
+
+Parágrafo único. É facultada às partes a estipulação de seguro de vida em favor do detetive particular, que indicará os beneficiários, quando a atividade envolver risco de morte.
+
+Art. 9 ~~º~~ Ao final do prazo pactuado para a execução dos serviços profissionais, o detetive particular entregará ao contratante ou a seu representante legal, mediante recibo, relatório circunstanciado sobre os dados e informações coletados, que conterá:
+
+I - os procedimentos técnicos adotados;
+
+II - a conclusão em face do resultado dos trabalhos executados e, se for o caso, a indicação das providências legais a adotar;
+
+III - data, identificação completa do detetive particular e sua assinatura.
+
+**Art. 10.  É vedado ao detetive particular** : **(PCRR-2022) (DPERJ-2023)**
+
+I - aceitar ou captar serviço que configure ou contribua para a prática de infração penal ou tenha caráter discriminatório;
+
+II - aceitar contrato de quem já tenha detetive particular constituído, salvo:
+
+a) com autorização prévia daquele com o qual irá colaborar ou a quem substituirá;
+
+b) na hipótese de dissídio entre o contratante e o profissional precedente ou de omissão deste que possa causar dano ao contratante;
+
+III - divulgar os meios e os resultados da coleta de dados e informações a que tiver acesso no exercício da profissão, salvo em defesa própria;
+
+**IV - participar diretamente de diligências policiais** ; **(PCRR-2022) (DPERJ-2023)**
+
+V - utilizar, em demanda contra o contratante, os dados, documentos e informações coletados na execução do contrato.
+
+Art. 11.  São deveres do detetive particular:
+
+I - preservar o sigilo das fontes de informação;
+
+II - respeitar o direito à intimidade, à privacidade, à honra e à imagem das pessoas;
+
+III - exercer a profissão com zelo e probidade;
+
+IV - defender, com isenção, os direitos e as prerrogativas profissionais, zelando pela própria reputação e a da classe;
+
+V - zelar pela conservação e proteção de documentos, objetos, dados ou informações que lhe forem confiados pelo cliente;
+
+VI - restituir, íntegro, ao cliente, findo o contrato ou a pedido, documento ou objeto que lhe tenha sido confiado;
+
+VII - prestar contas ao cliente.
+
+Art. 12.  São direitos do detetive particular:
+
+I - exercer a profissão em todo o território nacional na defesa dos direitos ou interesses que lhe forem confiados, na forma desta Lei;
+
+II - recusar serviço que considere imoral, discriminatório ou ilícito;
+
+III - renunciar ao serviço contratado, caso gere risco à sua integridade física ou moral;
+
+IV - compensar o montante dos honorários recebidos ou recebê-lo proporcionalmente, de acordo com o período trabalhado, conforme pactuado;
+
+V - (VETADO);
+
+VI - reclamar, verbalmente ou por escrito, perante qualquer autoridade, contra a inobservância de preceito de lei, regulamento ou regimento;
+
+VII - ser publicamente desagravado, quando injustamente ofendido no exercício da profissão.
+
+Art. 13.  Esta Lei entra em vigor na data de sua publicação.
+
+Brasília,  11  de abril de 2017; 196 o da Independência e 129 o da República.
+
+MICHEL TEMER
+
+*Osmar Serraglio*
+
+*Henrique Meirelles*
+
+*Ronaldo Nogueira de Oliveira*
+
+*Eliseu Padilha*
+
+*Grace Maria Fernandes Mendonça*
+
+Este texto não substitui o publicado no DOU de 12.4.2017
+
+*
