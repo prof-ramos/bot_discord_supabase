@@ -23,6 +23,5 @@ class EmbeddingsProvider:
                 return await self.embed_text(t)
 
         coros = [_embed_single(t) for t in texts]
-        for coro in asyncio.as_completed(coros):
-            results.append(await coro)
+        results.extend(await asyncio.gather(*coros))
         return results
