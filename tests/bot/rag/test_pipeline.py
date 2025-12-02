@@ -1,79 +1,86 @@
-import unittest
-from unittest.mock import MagicMock, patch, AsyncMock
 import pytest
+from unittest.mock import MagicMock, AsyncMock
 from src.bot.rag.pipeline import RagPipeline
 from src.bot.rag.models import SearchResult, RAGResponse
 from src.bot.rag.exceptions import RAGBaseError
 
-class TestRagPipeline(unittest.TestCase):
-    def setUp(self):
-        self.mock_store = AsyncMock()
-        self.mock_embedder = AsyncMock()
-        self.mock_llm = AsyncMock()
-        self.pipeline = RagPipeline(self.mock_store, self.mock_embedder, self.mock_llm)
+@pytest.fixture
+def mock_store():
+    return AsyncMock()
 
-    @pytest.mark.asyncio
-    @patch('src.bot.rag.pipeline.load_text_from_file')
-    @patch('src.bot.rag.pipeline.chunk_text')
-    async def test_add_document_success(self, mock_chunk, mock_load):
-        mock_load.return_value = "Full text content"
-        mock_chunk.return_value = ["chunk1", "chunk2"]
-        self.mock_embedder.embed_many.return_value = [[0.1], [0.2]]
-        self.mock_store.insert_document.return_value = "doc-123"
+@pytest.fixture
+def mock_embedder():
+    return AsyncMock()
 
-        doc_id = await self.pipeline.add_document("Test Title", "/path/to/file")
+@pytest.fixture
+def mock_llm():
+    return AsyncMock()
 
-        self.assertEqual(doc_id, "doc-123")
-        self.mock_store.insert_document.assert_called_once()
-        self.mock_store.insert_chunks.assert_called_once()
+@pytest.fixture
+def pipeline(mock_store, mock_embedder, mock_llm):
+    return RagPipeline(mock_store, mock_embedder, mock_llm)
 
-    @pytest.mark.asyncio
-    async def test_ask_success(self):
-        self.mock_embedder.embed_text.return_value = [0.1, 0.2]
-        expected_results = [
-            SearchResult(id="1", document_id="d1", chunk="c1", similarity=0.9),
-            SearchResult(id="2", document_id="d2", chunk="c2", similarity=0.8)
-        ]
-        self.mock_store.search.return_value = expected_results
+@pytest.mark.asyncio
+async def test_add_document_success(pipeline, mock_store, mock_embedder, mocker):
+    mock_load = mocker.patch('src.bot.rag.pipeline.load_text_from_file', return_value="Full text content")
+    mock_chunk = mocker.patch('src.bot.rag.pipeline.chunk_text', return_value=["chunk1", "chunk2"])
 
-        results = await self.pipeline.ask("query")
+    mock_embedder.embed_many.return_value = [[0.1], [0.2]]
+    mock_store.insert_document.return_value = "doc-123"
 
-        self.assertEqual(results, expected_results)
-        self.mock_embedder.embed_text.assert_called_with("query")
-        self.mock_store.search.assert_called_once()
+    doc_id = await pipeline.add_document("Test Title", "/path/to/file")
 
-    @pytest.mark.asyncio
-    async def test_ask_with_llm_success(self):
-        # Setup search results
-        search_results = [
-            SearchResult(id="1", document_id="d1", chunk="c1", similarity=0.9)
-        ]
-        self.mock_store.search.return_value = search_results
-        self.mock_embedder.embed_text.return_value = [0.1]
+    assert doc_id == "doc-123"
+    mock_store.insert_document.assert_called_once()
+    mock_store.insert_chunks.assert_called_once()
 
-        # Setup LLM response
-        self.mock_llm.generate_answer.return_value = "Generated Answer"
+@pytest.mark.asyncio
+async def test_ask_success(pipeline, mock_store, mock_embedder):
+    mock_embedder.embed_text.return_value = [0.1, 0.2]
+    expected_results = [
+        SearchResult(id="1", document_id="d1", chunk="c1", similarity=0.9),
+        SearchResult(id="2", document_id="d2", chunk="c2", similarity=0.8)
+    ]
+    mock_store.search.return_value = expected_results
 
-        response = await self.pipeline.ask_with_llm("query")
+    results = await pipeline.ask("query")
 
-        self.assertIsInstance(response, RAGResponse)
-        self.assertEqual(response.answer, "Generated Answer")
-        self.assertEqual(response.sources, search_results)
+    assert results == expected_results
+    mock_embedder.embed_text.assert_called_with("query")
+    mock_store.search.assert_called_once()
 
-    @pytest.mark.asyncio
-    async def test_ask_with_llm_no_results(self):
-        self.mock_store.search.return_value = []
-        self.mock_embedder.embed_text.return_value = [0.1]
-        self.mock_llm.generate_answer.return_value = "No context answer"
+@pytest.mark.asyncio
+async def test_ask_with_llm_success(pipeline, mock_store, mock_embedder, mock_llm):
+    # Setup search results
+    search_results = [
+        SearchResult(id="1", document_id="d1", chunk="c1", similarity=0.9)
+    ]
+    mock_store.search.return_value = search_results
+    mock_embedder.embed_text.return_value = [0.1]
 
-        response = await self.pipeline.ask_with_llm("query")
+    # Setup LLM response
+    mock_llm.generate_answer.return_value = "Generated Answer"
 
-        self.assertEqual(response.answer, "No context answer")
-        self.assertEqual(response.sources, [])
+    response = await pipeline.ask_with_llm("query")
 
-    @pytest.mark.asyncio
-    async def test_pipeline_error_handling(self):
-        self.mock_embedder.embed_text.side_effect = Exception("Embedder failed")
+    assert isinstance(response, RAGResponse)
+    assert response.answer == "Generated Answer"
+    assert response.sources == search_results
 
-        with self.assertRaises(RAGBaseError):
-            await self.pipeline.ask("query")
+@pytest.mark.asyncio
+async def test_ask_with_llm_no_results(pipeline, mock_store, mock_embedder, mock_llm):
+    mock_store.search.return_value = []
+    mock_embedder.embed_text.return_value = [0.1]
+    mock_llm.generate_answer.return_value = "No context answer"
+
+    response = await pipeline.ask_with_llm("query")
+
+    assert response.answer == "No context answer"
+    assert response.sources == []
+
+@pytest.mark.asyncio
+async def test_pipeline_error_handling(pipeline, mock_embedder):
+    mock_embedder.embed_text.side_effect = Exception("Embedder failed")
+
+    with pytest.raises(RAGBaseError):
+        await pipeline.ask("query")
