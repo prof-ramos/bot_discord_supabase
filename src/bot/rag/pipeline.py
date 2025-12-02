@@ -12,10 +12,17 @@ from .exceptions import RAGBaseError
 from ..utils.decorators import async_log_execution_time, async_handle_errors
 
 class RagPipeline:
-    def __init__(self, store: SupabaseStore, embedder: EmbeddingsProvider, llm: LLMClient | None = None):
+    def __init__(
+        self,
+        store: SupabaseStore,
+        embedder: EmbeddingsProvider,
+        llm: LLMClient | None = None,
+        chunk_max_words: int = 500
+    ):
         self.store = store
         self.embedder = embedder
         self.llm = llm
+        self.chunk_max_words = chunk_max_words
 
     @async_log_execution_time
     @async_handle_errors(RAGBaseError, "Erro ao adicionar documento")
@@ -28,7 +35,7 @@ class RagPipeline:
         logger.info("Documento carregado", path=str(path), text_length=len(text), load_duration=load_duration)
 
         chunk_start = time.time()
-        chunks_text = chunk_text(text)
+        chunks_text = chunk_text(text, max_words=self.chunk_max_words)
         chunk_duration = time.time() - chunk_start
         logger.info("Documento chunkado", chunks_count=len(chunks_text), chunk_duration=chunk_duration)
 
@@ -124,3 +131,12 @@ class RagPipeline:
     @async_handle_errors(RAGBaseError, "Erro ao resetar RAG")
     async def reset(self) -> None:
         await self.store.reset()
+
+        # Clear caches if present
+        if hasattr(self.embedder, 'cache') and self.embedder.cache:
+            self.embedder.cache.clear()
+
+        if self.llm and hasattr(self.llm, 'cache') and self.llm.cache:
+            self.llm.cache.clear()
+
+        logger.info("RAG pipeline reset complete (including caches)")
