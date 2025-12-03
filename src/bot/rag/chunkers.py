@@ -1,10 +1,16 @@
 from typing import List
 
 
-def chunk_text(text: str, max_words: int = 180) -> List[str]:
+def chunk_text(text: str, max_words: int) -> List[str]:
     """
-    Divide texto em chunks pequenos para free tier (palavras).
-    Simples, mas eficiente o suficiente para RAG inicial.
+    Divide texto em chunks baseado em limite de palavras.
+
+    Args:
+        text: Texto a ser dividido em chunks
+        max_words: Número máximo de palavras por chunk (configurable via settings.rag.chunk_max_words)
+
+    Returns:
+        Lista de chunks de texto
     """
     words = text.split()
     chunks: List[str] = []

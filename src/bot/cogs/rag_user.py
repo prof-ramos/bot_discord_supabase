@@ -59,17 +59,12 @@ def log_command_execution(command_name: str):
 
     return decorator
 
-# Constantes de segurança para uploads
-ALLOWED_EXTENSIONS = {'.txt', '.md', '.pdf'}
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
-
-
 class RagUser(commands.Cog):
     def __init__(self, bot: commands.Bot, settings: Settings, pipeline: RagPipeline):
         self.bot = bot
         self.settings = settings
         self.pipeline = pipeline
-        os.makedirs(self.settings.uploads_dir, exist_ok=True)
+        os.makedirs(self.settings.files.uploads_dir, exist_ok=True)
 
     @app_commands.command(name="add_doc", description="Adicionar documento ao RAG (upload de arquivo)")
     @log_command_execution("add_doc")
@@ -80,11 +75,12 @@ class RagUser(commands.Cog):
         await interaction.response.defer(thinking=True, ephemeral=True)
         try:
             # Validação de tamanho do arquivo
-            if file.size > MAX_FILE_SIZE:
-                error_msg = f"Arquivo muito grande ({file.size / 1024 / 1024:.1f}MB), máximo é {MAX_FILE_SIZE / 1024 / 1024}MB"
+            max_file_size_bytes = self.settings.files.max_file_size_mb * 1024 * 1024
+            if file.size > max_file_size_bytes:
+                error_msg = f"Arquivo muito grande ({file.size / 1024 / 1024:.1f}MB), máximo é {self.settings.files.max_file_size_mb}MB"
                 logger.warning(error_msg, user_id=user_id, file_name=file.filename, file_size=file.size)
                 await interaction.followup.send(
-                    f"❌ Arquivo muito grande (máx 10MB). Tamanho: {file.size / 1024 / 1024:.1f}MB",
+                    f"❌ Arquivo muito grande (máx {self.settings.files.max_file_size_mb}MB). Tamanho: {file.size / 1024 / 1024:.1f}MB",
                     ephemeral=True
                 )
                 return CommandResult(False, "file_too_large")
@@ -94,18 +90,18 @@ class RagUser(commands.Cog):
             file_ext = Path(safe_filename).suffix.lower()
 
             # Validação de extensão
-            if file_ext not in ALLOWED_EXTENSIONS:
+            if file_ext not in self.settings.files.allowed_extensions:
                 error_msg = f"Tipo de arquivo não permitido: {file_ext}"
-                logger.warning(error_msg, user_id=user_id, file_name=file.filename, allowed_extensions=list(ALLOWED_EXTENSIONS))
+                logger.warning(error_msg, user_id=user_id, file_name=file.filename, allowed_extensions=list(self.settings.files.allowed_extensions))
                 await interaction.followup.send(
-                    f"❌ Tipo de arquivo não permitido. Extensões aceitas: {', '.join(ALLOWED_EXTENSIONS)}",
+                    f"❌ Tipo de arquivo não permitido. Extensões aceitas: {', '.join(self.settings.files.allowed_extensions)}",
                     ephemeral=True
                 )
                 return CommandResult(False, "invalid_file_type")
 
             # Gera nome único para evitar colisões e ataques
             unique_filename = f"{secrets.token_hex(8)}_{safe_filename}"
-            dest = Path(self.settings.uploads_dir) / unique_filename
+            dest = Path(self.settings.files.uploads_dir) / unique_filename
 
             # Salva arquivo
             with open(dest, "wb") as f:
@@ -167,15 +163,17 @@ class RagUser(commands.Cog):
 
             if sources:
                 final_msg += "**📚 Fontes utilizadas:**\n"
-                for i, r in enumerate(sources[:3]):
+                sources_count = self.settings.discord.sources_preview.get('slash_command', 3)
+                for i, r in enumerate(sources[:sources_count]):
                     preview = (r.get("chunk") or "")[:150].replace("\n", " ")
                     sim = r.get("similarity", 0) * 100
                     final_msg += f"- *({sim:.1f}%)* {preview}...\n"
             else:
                 final_msg += "*Nenhuma fonte relevante encontrada.*"
 
-            if len(final_msg) > 2000:
-                final_msg = final_msg[:1997] + "..."
+            max_length = self.settings.discord.max_response_length
+            if len(final_msg) > max_length:
+                final_msg = final_msg[:max_length - 3] + "..."
 
             await interaction.followup.send(final_msg)
             logger.info("Resposta enviada com sucesso", user_id=user_id, response_length=len(final_msg))

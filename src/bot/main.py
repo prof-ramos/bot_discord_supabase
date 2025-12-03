@@ -33,9 +33,32 @@ def build_bot():
 
     logger.info("Iniciando componentes do pipeline RAG")
     store = SupabaseStore(settings.supabase_url, settings.supabase_service_key)
-    embedder = EmbeddingsProvider(api_key=settings.openai_api_key)
-    llm = LLMClient(api_key=settings.openrouter_api_key)
-    pipeline = RagPipeline(store=store, embedder=embedder, llm=llm)
+
+    # Initialize embedder with config
+    embedder = EmbeddingsProvider(
+        api_key=settings.openai_api_key,
+        model=settings.openai.embedding_model,
+        max_concurrent=settings.openai.max_concurrent_requests,
+        cache=None  # Cache will be initialized in Phase 3
+    )
+
+    # Initialize LLM with config
+    llm = LLMClient(
+        api_key=settings.openrouter_api_key,
+        model=settings.llm.primary_model,
+        temperature=settings.llm.temperature,
+        max_tokens=settings.llm.max_tokens,
+        system_prompt=settings.llm.system_prompt,
+        cache=None  # Cache will be initialized in Phase 3
+    )
+
+    # Initialize pipeline with config
+    pipeline = RagPipeline(
+        store=store,
+        embedder=embedder,
+        llm=llm,
+        chunk_max_words=settings.rag.chunk_max_words
+    )
     logger.info("Pipeline RAG inicializado com sucesso")
 
     return bot, settings, pipeline
