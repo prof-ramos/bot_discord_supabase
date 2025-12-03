@@ -34,3 +34,7 @@ supabase/.branches/
 .DS_Store
 *.swp
 *.swo
+
+# Pastas
+data/
+logs/
