@@ -1,5 +1,9 @@
 -- 0002_match_documents.sql
 -- RPC para busca vetorial RAG (cosine similarity via pgvector <=>)
+--
+-- IMPORTANTE: Esta função busca na tabela rag_chunks, que é a tabela
+-- usada pelo código Python atual (supabase_store.py).
+-- Compatível com o schema simples definido em schema.sql
 
 CREATE OR REPLACE FUNCTION public.match_documents(
   query_embedding vector(1536),
@@ -9,22 +13,22 @@ CREATE OR REPLACE FUNCTION public.match_documents(
 RETURNS TABLE (
   id bigint,
   document_id uuid,
-  chunk_id text,
   content text,
-  similarity float
+  similarity float,
+  metadata jsonb
 )
 LANGUAGE sql STABLE
 AS $$
   select
-    embeddings.id,
-    embeddings.document_id,
-    embeddings.chunk_id,
-    embeddings.content,
-    1 - (embeddings.embedding <=> query_embedding) as similarity
-  from public.embeddings
-  where 1 - (embeddings.embedding <=> query_embedding) > match_threshold
-  order by embeddings.embedding <=> query_embedding
+    c.id,
+    c.document_id,
+    c.chunk as content,
+    1 - (c.embedding <=> query_embedding) as similarity,
+    c.metadata
+  from public.rag_chunks c
+  where 1 - (c.embedding <=> query_embedding) > match_threshold
+  order by c.embedding <=> query_embedding
   limit match_count;
 $$;
 
-COMMENT ON FUNCTION public.match_documents IS 'Busca semântica em chunks de documentos jurídicos para RAG. Use com embeddings ada-002 (1536 dim). Ex: match_documents(query_emb, 0.78, 5);';
+COMMENT ON FUNCTION public.match_documents IS 'Busca semântica em chunks de documentos para RAG. Retorna chunks de rag_chunks ordenados por similaridade de cosseno. Use com embeddings ada-002 (1536 dim). Ex: match_documents(query_emb, 0.78, 5);';
