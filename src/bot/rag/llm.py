@@ -5,6 +5,20 @@ from openai import AsyncOpenAI
 from ..utils.logger import logger
 
 class LLMClient:
+    """Cliente para geração de respostas usando LLM via OpenRouter API.
+
+    Esta classe gerencia interações com modelos de linguagem via OpenRouter,
+    suportando cache de respostas e parâmetros configuráveis de geração.
+
+    Attributes:
+        client: Cliente assíncrono OpenAI compatível configurado para OpenRouter
+        model: Nome do modelo LLM (ex: 'x-ai/grok-4.1-fast:free')
+        temperature: Temperatura de geração (0.0 = determinístico, 2.0 = criativo)
+        max_tokens: Limite máximo de tokens na resposta
+        system_prompt: Prompt de sistema que define comportamento do LLM
+        cache: Cache opcional para armazenar respostas geradas
+    """
+
     def __init__(
         self,
         api_key: str,
@@ -14,6 +28,20 @@ class LLMClient:
         system_prompt: str = "",
         cache: Optional['LLMResponseCache'] = None
     ):
+        """Inicializa o cliente LLM.
+
+        Args:
+            api_key: API key do OpenRouter
+            model: Modelo LLM a usar (default: 'x-ai/grok-4.1-fast:free')
+            temperature: Temperatura de geração, 0.0-2.0 (default: 0.7)
+            max_tokens: Máximo de tokens na resposta (default: 1000)
+            system_prompt: Prompt de sistema customizado (usa padrão se vazio)
+            cache: Instância de cache opcional para respostas
+
+        Note:
+            OpenRouter permite usar vários modelos (Grok, Claude, GPT, etc.)
+            via API compatível com OpenAI.
+        """
         self.client = AsyncOpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=api_key,
@@ -30,7 +58,34 @@ class LLMClient:
         self.cache = cache
 
     async def generate_answer(self, query: str, context: list[str]) -> str:
-        """Gera uma resposta baseada na query e no contexto fornecido (com suporte a cache)."""
+        """Gera resposta em linguagem natural baseada em query e contexto RAG.
+
+        Combina a query do usuário com chunks de contexto relevantes e gera
+        uma resposta coerente usando o LLM. Busca cache antes de chamar API.
+
+        Args:
+            query: Pergunta do usuário
+            context: Lista de chunks de texto relevantes do RAG (pode ser vazia)
+
+        Returns:
+            Resposta gerada pelo LLM em texto natural
+
+        Raises:
+            Exception: Se a API do OpenRouter falhar (auth, rate limit, timeout, etc)
+
+        Example:
+            >>> llm = LLMClient(api_key="sk-or-...")
+            >>> context = ["Chunk 1 sobre Python", "Chunk 2 sobre FastAPI"]
+            >>> answer = await llm.generate_answer("O que é FastAPI?", context)
+            >>> print(answer)
+            'FastAPI é um framework web moderno...'
+
+        Note:
+            - Query é hasheada nos logs para proteger PII
+            - Cache usa tupla (query, context) como chave
+            - Se context vazio, LLM tenta responder sem contexto RAG
+            - Temperature e max_tokens são aplicados na geração
+        """
         # Check cache first
         if self.cache:
             cached = self.cache.get(query, context)
@@ -79,5 +134,16 @@ class LLMClient:
             raise
 
     def _sanitize_query(self, query: str) -> str:
-        """Retorna um hash curto da query para logs, protegendo PII."""
+        """Gera hash SHA-256 curto da query para logs sem expor PII.
+
+        Args:
+            query: Query original do usuário
+
+        Returns:
+            Hash SHA-256 truncado (12 caracteres) da query
+
+        Example:
+            >>> llm._sanitize_query("Como usar Python?")
+            'a3f5b9c2e1d4'
+        """
         return hashlib.sha256(query.encode()).hexdigest()[:12]

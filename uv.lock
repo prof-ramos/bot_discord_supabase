@@ -271,6 +271,7 @@ name = "bot-discord-supabase"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "cachetools" },
     { name = "cmake" },
     { name = "discord-py" },
     { name = "docling" },
@@ -278,6 +279,7 @@ dependencies = [
     { name = "pandas" },
     { name = "pypdf" },
     { name = "python-dotenv" },
+    { name = "pyyaml" },
     { name = "streamlit" },
     { name = "supabase" },
 ]
@@ -290,6 +292,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "cachetools", specifier = ">=5.3.0" },
     { name = "cmake", specifier = ">=4.2.0" },
     { name = "discord-py", specifier = ">=2.6.4" },
     { name = "docling", specifier = ">=2.63.0" },
@@ -297,6 +300,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.3.3" },
     { name = "pypdf", specifier = ">=3.0.0" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "streamlit", specifier = ">=1.51.0" },
     { name = "supabase", specifier = ">=2.24.0" },
 ]
