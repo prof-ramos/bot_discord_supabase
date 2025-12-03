@@ -45,6 +45,10 @@ class LLMClient:
         self.client = AsyncOpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=api_key,
+            default_headers={
+                "HTTP-Referer": "https://github.com/prof-ramos/bot_discord_supabase",
+                "X-Title": "Discord RAG Bot"
+            }
         )
         self.model = model
         self.temperature = temperature
