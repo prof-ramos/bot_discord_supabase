@@ -42,6 +42,15 @@ class LLMClient:
             OpenRouter permite usar vários modelos (Grok, Claude, GPT, etc.)
             via API compatível com OpenAI.
         """
+        # Validações de parâmetros
+        if not 0.0 <= temperature <= 2.0:
+            raise ValueError(f"Temperature deve estar entre 0.0 e 2.0, recebido: {temperature}")
+        if max_tokens <= 0:
+            raise ValueError(f"max_tokens deve ser positivo, recebido: {max_tokens}")
+        if cache is not None:
+            if not (hasattr(cache, 'get') and hasattr(cache, 'set')):
+                raise TypeError("Cache deve implementar métodos get() e set()")
+
         self.client = AsyncOpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=api_key,
